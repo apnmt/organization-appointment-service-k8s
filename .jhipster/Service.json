@@ -1,0 +1,24 @@
+{
+  "name": "Service",
+  "fields": [
+    {
+      "fieldName": "duration",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "relationships": [],
+  "entityTableName": "service",
+  "dto": "no",
+  "pagination": "no",
+  "service": "no",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "applications": ["organizationappointmentservice"],
+  "microserviceName": "organizationappointmentservice",
+  "clientRootFolder": "organizationappointmentservice",
+  "databaseType": "mongodb",
+  "changelogDate": "20211129150534"
+}

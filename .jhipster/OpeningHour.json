@@ -1,0 +1,34 @@
+{
+  "name": "OpeningHour",
+  "fields": [
+    {
+      "fieldName": "day",
+      "fieldType": "Day",
+      "fieldValues": "Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday"
+    },
+    {
+      "fieldName": "startTime",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "endTime",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "relationships": [],
+  "entityTableName": "opening_hour",
+  "dto": "no",
+  "pagination": "no",
+  "service": "no",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "applications": ["organizationappointmentservice"],
+  "microserviceName": "organizationappointmentservice",
+  "clientRootFolder": "organizationappointmentservice",
+  "databaseType": "mongodb",
+  "changelogDate": "20211129150234"
+}

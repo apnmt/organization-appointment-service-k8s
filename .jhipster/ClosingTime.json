@@ -1,0 +1,29 @@
+{
+  "name": "ClosingTime",
+  "fields": [
+    {
+      "fieldName": "startAt",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "endAt",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "relationships": [],
+  "entityTableName": "closing_time",
+  "dto": "no",
+  "pagination": "no",
+  "service": "no",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "applications": ["organizationappointmentservice"],
+  "microserviceName": "organizationappointmentservice",
+  "clientRootFolder": "organizationappointmentservice",
+  "databaseType": "mongodb",
+  "changelogDate": "20211129150134"
+}

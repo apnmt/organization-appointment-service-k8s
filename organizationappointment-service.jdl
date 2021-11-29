@@ -1,0 +1,47 @@
+application {
+  config {
+    baseName organizationappointmentservice,
+    applicationType microservice,
+    packageName de.apnmt.organizationappointment,
+    authenticationType jwt,
+    databaseType mongodb,
+    devDatabaseType mongodb,
+    skipClient true,
+    cacheProvider no,
+    skipUserManagement true,
+    serviceDiscoveryType no,
+    serverPort 8083
+  }
+  entities *
+}
+
+entity ClosingTime {
+	startAt Instant required,
+    endAt Instant required
+}
+
+entity OpeningHour {
+	day Day,
+    startTime Instant required,
+    endTime Instant required
+}
+
+enum Day {
+	Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
+}
+
+entity WorkingHour {
+	startAt Instant required,
+    endAt Instant required
+}
+
+entity Appointment {
+	startAt Instant required,
+    endAt Instant required,
+    organizationId Long required,
+    employeeId Long required
+}
+
+entity Service {
+	duration Integer required
+}
