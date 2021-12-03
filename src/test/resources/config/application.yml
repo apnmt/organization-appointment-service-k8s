@@ -13,13 +13,6 @@
 # http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 # ===================================================================
 
-eureka:
-  client:
-    enabled: false
-  instance:
-    appname: OrganizationAppointmentService
-    instanceId: OrganizationAppointmentService:${spring.application.instance-id:${random.value}}
-
 mongock:
   change-logs-scan-package:
     - de.apnmt.organizationappointment.config.dbmigrations
