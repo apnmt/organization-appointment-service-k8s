@@ -1,12 +1,6 @@
 package de.apnmt.organizationappointment;
 
 import de.apnmt.organizationappointment.config.ApplicationProperties;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
-import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +11,15 @@ import org.springframework.core.env.Environment;
 import tech.jhipster.config.DefaultProfileUtil;
 import tech.jhipster.config.JHipsterConstants;
 
-@SpringBootApplication
-@EnableConfigurationProperties({ ApplicationProperties.class })
+import javax.annotation.PostConstruct;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Optional;
+
+@SpringBootApplication(scanBasePackages = {"de.apnmt.common", "de.apnmt.organizationappointment.common", "de.apnmt.organizationappointment"})
+@EnableConfigurationProperties({ApplicationProperties.class})
 public class OrganizationappointmentserviceApp {
 
     private static final Logger log = LoggerFactory.getLogger(OrganizationappointmentserviceApp.class);
@@ -38,7 +39,7 @@ public class OrganizationappointmentserviceApp {
      */
     @PostConstruct
     public void initApplication() {
-        Collection<String> activeProfiles = Arrays.asList(env.getActiveProfiles());
+        Collection<String> activeProfiles = Arrays.asList(this.env.getActiveProfiles());
         if (
             activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT) &&
             activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_PRODUCTION)
