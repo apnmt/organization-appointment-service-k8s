@@ -54,6 +54,10 @@ spring:
         size: 1
   thymeleaf:
     mode: HTML
+  kafka:
+    bootstrap-servers: localhost:58255
+    consumer:
+      group-id: consumer
 
 server:
   port: 10344
