@@ -66,6 +66,31 @@ public class ClosingTimeKafkaEventConsumerIT extends AbstractKafkaConsumerIT {
     }
 
     @Test
+    public void closingTimeUpdatedTest() throws InterruptedException {
+        ClosingTimeEventDTO eventDTO = ApnmtTestUtil.createClosingTimeEventDTO();
+        ClosingTime ct = this.closingTimeEventMapper.toEntity(eventDTO);
+        this.closingTimeRepository.save(ct);
+
+        int databaseSizeBeforeCreate = this.closingTimeRepository.findAll().size();
+        ApnmtEvent<ClosingTimeEventDTO> event = ApnmtTestUtil.createClosingTimeEvent(ApnmtEventType.closingTimeCreated);
+        event.getValue().setOrganizationId(10L);
+
+        this.kafkaTemplate.send(TopicConstants.CLOSING_TIME_CHANGED_TOPIC, event);
+
+        Thread.sleep(1000);
+
+        List<ClosingTime> closingTimes = this.closingTimeRepository.findAll();
+        assertThat(closingTimes).hasSize(databaseSizeBeforeCreate);
+        ClosingTime closingTime = closingTimes.get(closingTimes.size() - 1);
+        ClosingTimeEventDTO closingTimeEventDTO = event.getValue();
+        assertThat(closingTime.getId()).isEqualTo(closingTimeEventDTO.getId());
+        assertThat(closingTime.getStartAt()).isEqualTo(closingTimeEventDTO.getStartAt());
+        assertThat(closingTime.getEndAt()).isEqualTo(closingTimeEventDTO.getEndAt());
+        assertThat(closingTime.getOrganizationId()).isNotEqualTo(eventDTO.getOrganizationId());
+        assertThat(closingTime.getOrganizationId()).isEqualTo(closingTimeEventDTO.getOrganizationId());
+    }
+
+    @Test
     public void closingTimeDeletedTest() throws InterruptedException {
         ApnmtEvent<ClosingTimeEventDTO> event = ApnmtTestUtil.createClosingTimeEvent(ApnmtEventType.closingTimeDeleted);
         ClosingTime closingTime = this.closingTimeEventMapper.toEntity(event.getValue());

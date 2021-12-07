@@ -67,6 +67,32 @@ public class AppointmentKafkaEventConsumerIT extends AbstractKafkaConsumerIT {
     }
 
     @Test
+    public void appointmentUpdatedTest() throws InterruptedException {
+        AppointmentEventDTO eventDTO = ApnmtTestUtil.createAppointmentEventDTO();
+        Appointment apnmt = this.appointmentEventMapper.toEntity(eventDTO);
+        this.appointmentRepository.save(apnmt);
+
+        int databaseSizeBeforeCreate = this.appointmentRepository.findAll().size();
+        ApnmtEvent<AppointmentEventDTO> event = ApnmtTestUtil.createAppointmentEvent(ApnmtEventType.appointmentCreated);
+        event.getValue().setEmployeeId(10L);
+
+        this.kafkaTemplate.send(TopicConstants.APPOINTMENT_CHANGED_TOPIC, event);
+
+        Thread.sleep(1000);
+
+        List<Appointment> appointments = this.appointmentRepository.findAll();
+        assertThat(appointments).hasSize(databaseSizeBeforeCreate);
+        Appointment appointment = appointments.get(appointments.size() - 1);
+        AppointmentEventDTO appointmentEventDTO = event.getValue();
+        assertThat(appointment.getId()).isEqualTo(appointmentEventDTO.getId());
+        assertThat(appointment.getStartAt()).isEqualTo(appointmentEventDTO.getStartAt());
+        assertThat(appointment.getEndAt()).isEqualTo(appointmentEventDTO.getEndAt());
+        assertThat(appointment.getEmployeeId()).isNotEqualTo(eventDTO.getEmployeeId());
+        assertThat(appointment.getEmployeeId()).isEqualTo(appointmentEventDTO.getEmployeeId());
+        assertThat(appointment.getOrganizationId()).isEqualTo(appointmentEventDTO.getOrganizationId());
+    }
+
+    @Test
     public void appointmentDeletedTest() throws InterruptedException {
         ApnmtEvent<AppointmentEventDTO> event = ApnmtTestUtil.createAppointmentEvent(ApnmtEventType.appointmentDeleted);
         Appointment appointment = this.appointmentEventMapper.toEntity(event.getValue());

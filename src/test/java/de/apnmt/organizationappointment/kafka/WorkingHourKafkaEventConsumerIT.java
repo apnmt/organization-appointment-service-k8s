@@ -66,6 +66,31 @@ public class WorkingHourKafkaEventConsumerIT extends AbstractKafkaConsumerIT {
     }
 
     @Test
+    public void workingHourUpdatedTest() throws InterruptedException {
+        WorkingHourEventDTO eventDTO = ApnmtTestUtil.createWorkingHourEventDTO();
+        WorkingHour wh = this.workingHourEventMapper.toEntity(eventDTO);
+        this.workingHourRepository.save(wh);
+
+        int databaseSizeBeforeCreate = this.workingHourRepository.findAll().size();
+        ApnmtEvent<WorkingHourEventDTO> event = ApnmtTestUtil.createWorkingHourEvent(ApnmtEventType.workingHourCreated);
+        event.getValue().setEmployeeId(10L);
+
+        this.kafkaTemplate.send(TopicConstants.WORKING_HOUR_CHANGED_TOPIC, event);
+
+        Thread.sleep(1000);
+
+        List<WorkingHour> workingHours = this.workingHourRepository.findAll();
+        assertThat(workingHours).hasSize(databaseSizeBeforeCreate);
+        WorkingHour workingHour = workingHours.get(workingHours.size() - 1);
+        WorkingHourEventDTO workingHourEventDTO = event.getValue();
+        assertThat(workingHour.getId()).isEqualTo(workingHourEventDTO.getId());
+        assertThat(workingHour.getStartAt()).isEqualTo(workingHourEventDTO.getStartAt());
+        assertThat(workingHour.getEndAt()).isEqualTo(workingHourEventDTO.getEndAt());
+        assertThat(workingHour.getEmployeeId()).isNotEqualTo(eventDTO.getEmployeeId());
+        assertThat(workingHour.getEmployeeId()).isEqualTo(workingHourEventDTO.getEmployeeId());
+    }
+
+    @Test
     public void workingHourDeletedTest() throws InterruptedException {
         ApnmtEvent<WorkingHourEventDTO> event = ApnmtTestUtil.createWorkingHourEvent(ApnmtEventType.workingHourDeleted);
         WorkingHour workingHour = this.workingHourEventMapper.toEntity(event.getValue());

@@ -67,6 +67,32 @@ public class OpeningHourKafkaEventConsumerIT extends AbstractKafkaConsumerIT {
     }
 
     @Test
+    public void openingHourUpdatedTest() throws InterruptedException {
+        OpeningHourEventDTO eventDTO = ApnmtTestUtil.createOpeningHourEventDTO();
+        OpeningHour oh = this.openingHourEventMapper.toEntity(eventDTO);
+        this.openingHourRepository.save(oh);
+
+        int databaseSizeBeforeCreate = this.openingHourRepository.findAll().size();
+        ApnmtEvent<OpeningHourEventDTO> event = ApnmtTestUtil.createOpeningHourEvent(ApnmtEventType.openingHourCreated);
+        event.getValue().setOrganizationId(10L);
+
+        this.kafkaTemplate.send(TopicConstants.OPENING_HOUR_CHANGED_TOPIC, event);
+
+        Thread.sleep(1000);
+
+        List<OpeningHour> openingHours = this.openingHourRepository.findAll();
+        assertThat(openingHours).hasSize(databaseSizeBeforeCreate);
+        OpeningHour openingHour = openingHours.get(openingHours.size() - 1);
+        OpeningHourEventDTO openingHourEventDTO = event.getValue();
+        assertThat(openingHour.getId()).isEqualTo(openingHourEventDTO.getId());
+        assertThat(openingHour.getStartTime()).isEqualTo(openingHourEventDTO.getStartTime());
+        assertThat(openingHour.getEndTime()).isEqualTo(openingHourEventDTO.getEndTime());
+        assertThat(openingHour.getDay()).isEqualTo(openingHourEventDTO.getDay());
+        assertThat(openingHour.getOrganizationId()).isNotEqualTo(eventDTO.getOrganizationId());
+        assertThat(openingHour.getOrganizationId()).isEqualTo(openingHourEventDTO.getOrganizationId());
+    }
+
+    @Test
     public void openingHourDeletedTest() throws InterruptedException {
         ApnmtEvent<OpeningHourEventDTO> event = ApnmtTestUtil.createOpeningHourEvent(ApnmtEventType.openingHourDeleted);
         OpeningHour openingHour = this.openingHourEventMapper.toEntity(event.getValue());

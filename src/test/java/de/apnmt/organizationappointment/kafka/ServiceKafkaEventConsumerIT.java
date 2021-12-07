@@ -64,6 +64,29 @@ public class ServiceKafkaEventConsumerIT extends AbstractKafkaConsumerIT {
     }
 
     @Test
+    public void serviceUpdatedTest() throws InterruptedException {
+        ServiceEventDTO eventDTO = ApnmtTestUtil.createServiceEventDTO();
+        Service s = this.serviceEventMapper.toEntity(eventDTO);
+        this.serviceRepository.save(s);
+
+        int databaseSizeBeforeCreate = this.serviceRepository.findAll().size();
+        ApnmtEvent<ServiceEventDTO> event = ApnmtTestUtil.createServiceEvent(ApnmtEventType.serviceCreated);
+        event.getValue().setDuration(100);
+
+        this.kafkaTemplate.send(TopicConstants.SERVICE_CHANGED_TOPIC, event);
+
+        Thread.sleep(1000);
+
+        List<Service> services = this.serviceRepository.findAll();
+        assertThat(services).hasSize(databaseSizeBeforeCreate);
+        Service service = services.get(services.size() - 1);
+        ServiceEventDTO serviceEventDTO = event.getValue();
+        assertThat(service.getId()).isEqualTo(serviceEventDTO.getId());
+        assertThat(service.getDuration()).isNotEqualTo(eventDTO.getDuration());
+        assertThat(service.getDuration()).isEqualTo(serviceEventDTO.getDuration());
+    }
+
+    @Test
     public void serviceDeletedTest() throws InterruptedException {
         ApnmtEvent<ServiceEventDTO> event = ApnmtTestUtil.createServiceEvent(ApnmtEventType.serviceDeleted);
         Service service = this.serviceEventMapper.toEntity(event.getValue());
