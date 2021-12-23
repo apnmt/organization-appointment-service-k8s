@@ -58,6 +58,7 @@ spring:
     bootstrap-servers: localhost:58255
     consumer:
       group-id: consumer
+      auto-startup: true
 
 server:
   port: 10344
