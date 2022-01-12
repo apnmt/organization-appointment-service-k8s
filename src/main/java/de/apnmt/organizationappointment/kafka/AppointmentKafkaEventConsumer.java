@@ -32,6 +32,7 @@ public class AppointmentKafkaEventConsumer extends AppointmentEventConsumer {
     @KafkaListener(topics = {TopicConstants.APPOINTMENT_CHANGED_TOPIC})
     public void receiveEvent(@Payload String message) {
         try {
+            log.info("Received event {} from kafka topic {}", message, TopicConstants.APPOINTMENT_CHANGED_TOPIC);
             ApnmtEvent<AppointmentEventDTO> event = this.objectMapper.readValue(message, EVENT_TYPE);
             super.receiveEvent(event);
         } catch (JsonProcessingException e) {

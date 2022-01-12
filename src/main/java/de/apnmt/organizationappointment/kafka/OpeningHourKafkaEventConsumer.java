@@ -32,6 +32,7 @@ public class OpeningHourKafkaEventConsumer extends OpeningHourEventConsumer {
     @KafkaListener(topics = {TopicConstants.OPENING_HOUR_CHANGED_TOPIC})
     public void receiveEvent(@Payload String message) {
         try {
+            log.info("Received event {} from kafka topic {}", message, TopicConstants.OPENING_HOUR_CHANGED_TOPIC);
             ApnmtEvent<OpeningHourEventDTO> event = this.objectMapper.readValue(message, EVENT_TYPE);
             super.receiveEvent(event);
         } catch (JsonProcessingException e) {

@@ -32,6 +32,7 @@ public class ServiceKafkaEventConsumer extends ServiceEventConsumer {
     @KafkaListener(topics = {TopicConstants.SERVICE_CHANGED_TOPIC})
     public void receiveEvent(@Payload String message) {
         try {
+            log.info("Received event {} from kafka topic {}", message, TopicConstants.SERVICE_CHANGED_TOPIC);
             ApnmtEvent<ServiceEventDTO> event = this.objectMapper.readValue(message, EVENT_TYPE);
             super.receiveEvent(event);
         } catch (JsonProcessingException e) {

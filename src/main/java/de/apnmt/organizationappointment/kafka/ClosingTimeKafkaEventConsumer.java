@@ -32,6 +32,7 @@ public class ClosingTimeKafkaEventConsumer extends ClosingTimeEventConsumer {
     @KafkaListener(topics = {TopicConstants.CLOSING_TIME_CHANGED_TOPIC})
     public void receiveEvent(@Payload String message) {
         try {
+            log.info("Received event {} from kafka topic {}", message, TopicConstants.CLOSING_TIME_CHANGED_TOPIC);
             ApnmtEvent<ClosingTimeEventDTO> event = this.objectMapper.readValue(message, EVENT_TYPE);
             super.receiveEvent(event);
         } catch (JsonProcessingException e) {
