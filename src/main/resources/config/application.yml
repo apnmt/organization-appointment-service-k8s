@@ -74,7 +74,7 @@ management:
 
 mongock:
   change-logs-scan-package:
-    - de.apnmt.organizationappointment.config.dbmigrations
+    - de.apnmt.organizationappointment.common.config.dbmigrations
 
 spring:
   application:
@@ -116,7 +116,7 @@ spring:
     bootstrap-servers: localhost:9092
     consumer:
       group-id: organization-appointment-service
-      auto-startup: false
+      auto-startup: true
 
 server:
   servlet:
