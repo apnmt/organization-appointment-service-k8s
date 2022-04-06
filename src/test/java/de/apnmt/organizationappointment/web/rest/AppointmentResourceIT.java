@@ -2,6 +2,7 @@ package de.apnmt.organizationappointment.web.rest;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import de.apnmt.organizationappointment.IntegrationTest;
 import de.apnmt.organizationappointment.common.domain.Appointment;
@@ -13,7 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -102,5 +107,20 @@ class AppointmentResourceIT {
     void getNonExistingAppointment() throws Exception {
         // Get the appointment
         restAppointmentMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deleteAllAppointments() throws Exception {
+        // Initialize the database
+        this.appointmentRepository.save(this.appointment);
+
+        int databaseSizeBeforeDelete = this.appointmentRepository.findAll().size();
+
+        // Delete the appointment
+        this.restAppointmentMockMvc.perform(delete(ENTITY_API_URL).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
+
+        // Validate the database contains no more item
+        List<Appointment> appointmentList = this.appointmentRepository.findAll();
+        assertThat(appointmentList).hasSize(0);
     }
 }
