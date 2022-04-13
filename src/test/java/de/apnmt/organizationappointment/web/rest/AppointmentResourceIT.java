@@ -121,6 +121,6 @@ class AppointmentResourceIT {
 
         // Validate the database contains no more item
         List<Appointment> appointmentList = this.appointmentRepository.findAll();
-        assertThat(appointmentList).hasSize(0);
+        assertThat(appointmentList).hasSize(databaseSizeBeforeDelete - 1);
     }
 }

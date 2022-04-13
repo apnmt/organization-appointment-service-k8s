@@ -2,8 +2,10 @@ package de.apnmt.organizationappointment.web.rest;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import de.apnmt.organizationappointment.IntegrationTest;
+import de.apnmt.organizationappointment.common.domain.Appointment;
 import de.apnmt.organizationappointment.common.domain.ClosingTime;
 import de.apnmt.organizationappointment.common.repository.ClosingTimeRepository;
 import de.apnmt.organizationappointment.common.web.rest.ClosingTimeResource;
@@ -13,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -92,5 +97,20 @@ class ClosingTimeResourceIT {
     void getNonExistingClosingTime() throws Exception {
         // Get the closingTime
         restClosingTimeMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deleteAllClosingTimes() throws Exception {
+        // Initialize the database
+        this.closingTimeRepository.save(this.closingTime);
+
+        int databaseSizeBeforeDelete = this.closingTimeRepository.findAll().size();
+
+        // Delete the appointment
+        this.restClosingTimeMockMvc.perform(delete(ENTITY_API_URL).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
+
+        // Validate the database contains no more item
+        List<ClosingTime> list = this.closingTimeRepository.findAll();
+        assertThat(list).hasSize(databaseSizeBeforeDelete - 1);
     }
 }

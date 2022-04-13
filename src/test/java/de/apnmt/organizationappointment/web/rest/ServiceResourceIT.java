@@ -1,6 +1,7 @@
 package de.apnmt.organizationappointment.web.rest;
 
 import de.apnmt.organizationappointment.IntegrationTest;
+import de.apnmt.organizationappointment.common.domain.ClosingTime;
 import de.apnmt.organizationappointment.common.domain.Service;
 import de.apnmt.organizationappointment.common.repository.ServiceRepository;
 import de.apnmt.organizationappointment.common.web.rest.ServiceResource;
@@ -10,7 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -84,5 +90,23 @@ class ServiceResourceIT {
     void getNonExistingService() throws Exception {
         // Get the service
         restServiceMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deleteAllServices() throws Exception {
+        // Initialize the database
+        this.serviceRepository.save(this.service);
+        Service service = createEntity();
+        service.setId(1255L);
+        this.serviceRepository.save(service);
+
+        int databaseSizeBeforeDelete = this.serviceRepository.findAll().size();
+
+        // Delete the appointment
+        this.restServiceMockMvc.perform(delete(ENTITY_API_URL).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
+
+        // Validate the database contains no more item
+        List<Service> list = this.serviceRepository.findAll();
+        assertThat(list).hasSize(databaseSizeBeforeDelete - 1);
     }
 }
