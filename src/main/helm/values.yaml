@@ -9,10 +9,6 @@ image:
 emissary:
     prefix: /service/organizationappointment/
 
-mongodb:
-    architecture: replicaset
-    replicaCount: 2
-
 spec:
     ports:
         targetPort: 8083
